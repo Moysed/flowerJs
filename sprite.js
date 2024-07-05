@@ -2,11 +2,12 @@ class Sprite{
 
     constructor(option){
         this.context = option.context;
-        this.width = option.width;
-        this.height = option.height;
         this.image = option.image;
+        this.index = option.index;
+        this.frame = option.frame;
         this.x = option.x;
         this.y = option.y;
+        this.anchor = (option.anchor==null) ? {x:0.5 , y:0.5} : option.anchor;
         this.states = option.states;
         this.state = 0;
         this.scale = (option.scale == null)? 1.0 : option.scale;
@@ -22,14 +23,14 @@ class Sprite{
 
         this.context.drawImage(
             this.image,
-            0,
-            0,
-            this.width,
-            this.height,
-            this.x,
-            this.y,
-            this.width * this.scale,
-            this.height * this.scale);
+            this.frame.x,
+            this.frame.y,
+            this.frame.w,
+            this.frame.h,
+            this.x - this.frame.w * this.scale * this.anchor.x,
+            this.y - this.frame.h * this.scale * this.anchor.y,
+            this.frame.w * this.scale,
+            this.frame.h * this.scale);
 
             this.context.globalAlpha = alpha;
     
@@ -48,6 +49,23 @@ class Sprite{
         } 
 
         return result;
+    }
+
+    hitTest(pt){
+        const centre = {x:this.x , y: this.y};
+        const radius = (this.frame.w * this.scale) /2;
+
+        const dist  = distanceBetweenPoints(pt,centre);
+
+        return (dist<radius);
+
+        function distanceBetweenPoints(a,b){
+            
+            var x = a.x - b.x;
+            var y = a.y - b.y;
+            console.log(x);
+            return Math.sqrt(x * x + y * y);
+        }
     }
 
     update(dt){
