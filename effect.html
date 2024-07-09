@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>HTML GAMES - Beginner to Pro - Section 6 - Video 1</title>
+
+        <script src="game.js"></script>
+        <script src="SFX.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function(event){
+                const game = new Game();
+                window.game = game;
+            });
+        </script>
+
+        <style>
+            html, body{
+                font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                
+            }
+
+            button{
+                background: aqual;
+                color: black;
+                padding: 10px 10px;
+                border: none;
+                border-radius: 5px;
+
+            }
+
+            #controls {
+                display: flex;
+                align-content: center;
+                justify-content: center;
+                position: absolute;
+                width: 300px;
+                left: 0px;
+                top: 0px;
+                border: 1px solid black;
+                margin: 30px;
+                padding: 30px;
+                background: #777;
+
+            }
+        </style>
+    </head>
+    <body>
+        <div id="cotrols">
+            <button id="playSndBtn">Play sound</button>
+        </div>
+    </body>
+</html>

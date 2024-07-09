@@ -1,9 +1,24 @@
 class Game{
     constructor(){
+
         this.canvas = document.getElementById("game");
         this.context =this.canvas.getContext("2d");
         this.sprites = [];
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+        this.correctSfx = new SFX({
+            context : this.audioContext,
+            src:{mp3:"gliss.mp3", webm:"gliss.webm"},
+            loop:false,
+            volume:0.3
+        });
+
+        this.wrongSFX = new SFX({
+            context : this.audioContext,
+            src:{mp3:"boing.mp3",webm:"boing.webm"},
+            loop:false,
+            volume: 0.3
+        })
         this.spriteImage  = new Image();
         this.spriteImage.src = "flower.png"
 
@@ -55,23 +70,44 @@ class Game{
         const mousePos = this.getMousePos(evt);
 
         for(let sprite of this.sprites){
-            if(sprite.hitTest(mousePos)){
-                sprite.kill = true;
-                this.score++;
+                if(sprite.hitTest(mousePos)){
+                    sprite.live--;
+                    if(sprite.index == 0){
+                        this.correctSfx.play();
+                            this.score += 1;
+                    }
+                    if(sprite.index == 1){
+                        this.correctSfx.play();
+                        this.score += 3;
+                    }
+                    if(sprite.index == 2){
+                        this.correctSfx.play();  
+                            this.score += 4;
+                    }
+                if(sprite.index == 3){
+                    this.correctSfx.play();
+                        this.score += 2;
+                }
+                if(sprite.index ==4){
+                    this.wrongSFX.play();
+                }
+                
             }
-        }
     }
+}
 
     getMousePos(evt){
         const rect =this.canvas.getBoundingClientRect();
         const clientX = evt.targetTouches ? evt.targetTouches[0].pageX : evt.clientX;
-        const clientY = evt.targetTouches ? evt.targetTouches[1].pageY : evt.clientY;
+        const clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY;
 
         const canvasScale = this.canvas.width / this.canvas.offsetWidth;
         const loc = {};
 
         loc.x = (clientX - rect.left) * canvasScale;
         loc.y = (clientY - rect.top) * canvasScale;
+        console.log(loc)
+        return loc;
     }
 
     game(){
@@ -102,9 +138,9 @@ class Game{
             frame: frame,
             anchor: {x:0.5, y:0.5},
             image : this.spriteImage,
+            live: (index==4) ? 5.0 : null,
             states:[{ mode:"spawn" , duration: 0.5} , { mode : "static", duration:1.5} , {mode :"die",duration:0.8}]
         });
-        console.log(sprite);
         this.sprites.push(sprite);
         this.sinceLastSpawn = 0;
     }
@@ -115,6 +151,8 @@ class Game{
         for(let sprite of this.sprites){
             sprite.render();
         }
+
+        this.context.fillText("Score: " + this.score, 150, 30);
     }
 
     update(dt){
@@ -135,6 +173,10 @@ class Game{
         }while(removed);
 
         for(let sprite of this.sprites){
+            if(sprite.index == 4 && sprite.opacity ==0 ){
+                this.wrongSFX.play();
+                this.score--;
+            }
             if(sprite ==null) continue;
             sprite.update(dt);
         }
